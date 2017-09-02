@@ -71,7 +71,7 @@ export default {
             this.appids = gzhCodes[i].appCode1
           }
         }
-        let cpParam = 'userid=0&' + 'ssid=11156&' + 'appid=' + this.appids + '&category=0&' + 'thencoin=0&' + 'cltver=0&' + 'goodsid=0'
+        let cpParam = 'userid=0&' + 'ssid=11156&' + 'appid=' + this.appids + '&category=0&' + 'thencoin=0&' + 'cltver=0&' + 'goodsid=00'
         cpParam = Base64.encode(cpParam)
         let dataArr = {
           'ssAuth': this.ssAuth,
@@ -87,7 +87,7 @@ export default {
         this.$http.post(this.$store.state.postUrl + '/Api/Pay/payOrderNew', dataArr, {emulateJSON: true})
         .then(function (res) {
           if (res.body.code === 10000) {
-            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.orderSn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'app_code': this.gzhCode, 'pay_for': 0}, {emulateJSON: true})
+            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.orderSn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'appCode1': this.appids}, {emulateJSON: true})
             .then(function (res) {
               wx.ready(function () {
               // 支付配置

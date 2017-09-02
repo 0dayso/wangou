@@ -90,7 +90,8 @@ export default {
       okAddress: '',
       // 获取的支付方式信息
       apply: '',
-      wxConfig: this.$store.state.wxConfig
+      wxConfig: this.$store.state.wxConfig,
+      appids: 0
     }
   },
   mounted () {
@@ -230,6 +231,12 @@ export default {
     },
     // 确定支付
     payment: function () {
+      var gzhCodes = this.$store.state.gzhCodes
+      for (let i = 0; i < gzhCodes.length; i++) {
+        if (this.gzhCode === gzhCodes[i].gzhCode) {
+          this.appids = gzhCodes[i].appCode1
+        }
+      }
       if (this.ssAuth !== '0') {
         if (this.intQuan === '') {
           this.intQuan = 0
@@ -237,7 +244,7 @@ export default {
         this.$http.post(this.$store.state.postUrl + '/Api/Mall/exchangeGoods', {'ssAuth': this.ssAuth, 'goodsId': this.goodsInt.goodsId, 'discount': this.intQuan, 'addressId': this.addressId, 'payType': 'alipay'}, {emulateJSON: true})
         .then(function (res) {
           if (res.body.code === 10000) {
-            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.order_sn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'app_code': this.gzhCode, 'pay_for': 1}, {emulateJSON: true})
+            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.order_sn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'appCode1': this.appids, 'pay_for': 1}, {emulateJSON: true})
             .then(function (res) {
               console.log(res)
               wx.ready(function () {

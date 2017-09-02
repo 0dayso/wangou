@@ -61,7 +61,8 @@ export default {
       huodong: [1],
       xian: 0,
       moneys: [],
-      cai: 0
+      cai: 0,
+      appids: 0
     }
   },
   mounted () {
@@ -103,6 +104,7 @@ export default {
       if (this.moneys.length > 0) {
         this.xian = this.moneys[0].quan
       }
+      this.pr = this.total
     },
     // 输入抵扣券
     calculation: function () {
@@ -112,6 +114,7 @@ export default {
         this.pr = this.total
       } else if (this.num > this.xian) {
         Toast('抵扣券最多为' + this.xian + '个')
+        this.num = ''
       } else
       if (this.total - this.num < 0) {
         this.pr = '00.00'
@@ -123,7 +126,7 @@ export default {
     },
     // 获取用户券信息
     getVoucher: function () {
-      this.$http.post(this.$store.state.postUrl + '/Api/User/getUserQuanInfo', {'ssAuth': this.ssAuth, 'gzh_code': this.$store.state.gzhCode}, {emulateJSON: true})
+      this.$http.post(this.$store.state.postUrl + '/Api/User/getUserQuanInfo', {'ssAuth': this.ssAuth, 'gzh_code': this.gzhCode}, {emulateJSON: true})
       .then(function (res) {
         if (res.body.code === 10000) {
           this.holder = '劵余额' + res.body.data.gongzhongquan + '个'
@@ -139,10 +142,16 @@ export default {
       if (this.total === 0 || this.total === '') {
         Toast('请输入消费总额')
       } else {
+        var gzhCodes = this.$store.state.gzhCodes
+        for (let i = 0; i < gzhCodes.length; i++) {
+          if (this.gzhCode === gzhCodes[i].gzhCode) {
+            this.appids = gzhCodes[i].appCode1
+          }
+        }
         this.$http.post(this.$store.state.postUrl + '/Api/Store/placeStoreOrder', {'ssAuth': this.ssAuth, 'payType': 'wxPay', 'storeId': this.$route.query.storeId, 'totalMoney': this.total, 'pointMoney': this.num}, {emulateJSON: true})
         .then(function (res) {
           if (res.body.code === 10000) {
-            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.order_sn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'app_code': this.gzhCode, 'pay_for': 2}, {emulateJSON: true})
+            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.order_sn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'appCode1': this.appids, 'pay_for': 2}, {emulateJSON: true})
             .then(function (res) {
               wx.ready(function () {
               // 支付配置
