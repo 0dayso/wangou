@@ -227,7 +227,7 @@
                          <!-- 游戏信息    -->
                         <div class="aui-list-item-inner">
                             <div class="aui-list-item-text game_titie">
-                               <div class="aui-list-item-title">{{item.title}}</div>
+                               <div class="aui-list-item-title">{{item.name}}</div>
                             </div>
                             <!-- {{it.coins[0].name}} -->
                             <div class="aui-card-list-user-info" v-for="it in item.prise">{{it}}</div>
