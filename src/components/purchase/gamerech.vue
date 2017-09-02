@@ -39,6 +39,7 @@
 </template>
 <script>
 import '../../../static/css/aui.css'
+import wx from 'weixin-js-sdk'
 let Base64 = require('js-base64').Base64
 export default {
   data () {
@@ -64,7 +65,13 @@ export default {
     payment: function () {
       if (this.total > 0) {
         // 转化base64加密
-        let cpParam = 'ssAuth=' + this.ssAuth + '&goodsName=游戏币' + '&payType=' + this.apply.name + '&cpOrder=1' + '&gzhCode=' + this.gzhCode + '&isSend=0'
+        var gzhCodes = this.$store.state.gzhCodes
+        for (let i = 0; i < gzhCodes.length; i++) {
+          if (this.gzhCode === gzhCodes[i].gzhCode) {
+            this.appids = gzhCodes[i].appCode1
+          }
+        }
+        let cpParam = 'userid=0&' + 'ssid=11156&' + 'appid=' + this.appids + '&category=0&' + 'thencoin=0&' + 'cltver=0&' + 'goodsid=0'
         cpParam = Base64.encode(cpParam)
         let dataArr = {
           'ssAuth': this.ssAuth,
@@ -80,7 +87,27 @@ export default {
         this.$http.post(this.$store.state.postUrl + '/Api/Pay/payOrderNew', dataArr, {emulateJSON: true})
         .then(function (res) {
           if (res.body.code === 10000) {
-            console.log(res)
+            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.orderSn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'app_code': this.gzhCode, 'pay_for': 0}, {emulateJSON: true})
+            .then(function (res) {
+              wx.ready(function () {
+              // 支付配置
+                wx.chooseWXPay({
+                  appId: res.body.data.order_info.appId,
+                  timestamp: res.body.data.order_info.timeStamp,
+                  nonceStr: res.body.data.order_info.nonceStr,
+                  package: res.body.data.order_info.package,
+                  signType: 'MD5',
+                  paySign: res.body.data.order_info.sign, // 支付签名
+                  success: function (res) {
+                  },
+                  fail: function (res) {
+                    res = res.toJSONString()
+                    alert(res)
+                  }
+                })
+              })
+              wx.error(function (res) {})
+            })
           }
         })
       }

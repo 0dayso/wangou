@@ -6,7 +6,6 @@ const store = new Vuex.Store({
   state: {
     postUrl: 'http://wechatapi.7618.com',
     ssAuth: '',
-    // ssAuth: '7d527f6bc984c5ce561cf8a64e082e96',
     pro: '省、',
     proId: 0,
     city: '市、',

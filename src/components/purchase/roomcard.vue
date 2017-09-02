@@ -57,7 +57,8 @@ export default {
       gzhFKCount: 0,
       fk_count: 0,
       apply: '',
-      ssAuth: this.$store.state.ssAuth
+      ssAuth: this.$store.state.ssAuth,
+      appids: 0
     }
   },
   methods: {
@@ -80,7 +81,13 @@ export default {
       // })
       if (this.total > 0) {
         // 转化base64加密
-        let cpParam = 'userid=0&' + 'ssid=11156&' + 'appid=&' + 'category=0&' + 'thencoin=0&' + 'cltver=0&' + 'goodsid=10000'
+        var gzhCodes = this.$store.state.gzhCodes
+        for (let i = 0; i < gzhCodes.length; i++) {
+          if (this.gzhCode === gzhCodes[i].gzhCode) {
+            this.appids = gzhCodes[i].appCode1
+          }
+        }
+        let cpParam = 'userid=0&' + 'ssid=11156&' + 'appid=' + this.appids + '&category=0&' + 'thencoin=0&' + 'cltver=0&' + 'goodsid=10000'
         cpParam = Base64.encode(cpParam)
         let dataArr = {
           'ssAuth': this.ssAuth,
@@ -97,7 +104,7 @@ export default {
         this.$http.post(this.$store.state.postUrl + '/Api/Pay/payOrderNew', dataArr, {emulateJSON: true})
         .then(function (res) {
           if (res.body.code === 10000) {
-            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.orderSn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid}, {emulateJSON: true})
+            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.orderSn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'app_code': this.gzhCode, 'pay_for': 0}, {emulateJSON: true})
             .then(function (res) {
               console.log(res)
               wx.ready(function () {
@@ -146,26 +153,26 @@ export default {
         }
       }
     })
-    var s = window.location.href
-    var a = encodeURI(window.location.href.split('?')[0])
-    var c = s.split('#')[1]
-    s = a + '#' + c
-    this.$http.post(this.$store.state.postUrl + '/Api/App/getWechatSign', {'ticket': this.$store.state.ticket, 'url': s}, {emulateJSON: true})
-    .then(function (res) {
-      if (res.body.code === 10000) {
-        this.$store.state.wxConfig = res.body.data
-        this.wxconfig = res.body.data
-        // 配置微信信息
-        wx.config({
-          debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-          appId: res.body.data.appId, // 必填，公众号的唯一标识
-          timestamp: res.body.data.timestamp, // 必填，生成签名的时间戳
-          nonceStr: res.body.data.nonceStr, // 必填，生成签名的随机串
-          signature: res.body.data.signature, // 必填，签名，见附录1
-          jsApiList: ['chooseWXPay'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-        })
-      }
-    })
+    // var s = window.location.href
+    // var a = encodeURI(window.location.href.split('?')[0])
+    // var c = s.split('#')[1]
+    // s = a + '#' + c
+    // this.$http.post(this.$store.state.postUrl + '/Api/App/getWechatSign', {'ticket': this.$store.state.ticket, 'url': s}, {emulateJSON: true})
+    // .then(function (res) {
+    //   if (res.body.code === 10000) {
+    //     this.$store.state.wxConfig = res.body.data
+    //     this.wxconfig = res.body.data
+    //     // 配置微信信息
+    //     wx.config({
+    //       debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+    //       appId: res.body.data.appId, // 必填，公众号的唯一标识
+    //       timestamp: res.body.data.timestamp, // 必填，生成签名的时间戳
+    //       nonceStr: res.body.data.nonceStr, // 必填，生成签名的随机串
+    //       signature: res.body.data.signature, // 必填，签名，见附录1
+    //       jsApiList: ['chooseWXPay'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    //     })
+    //   }
+    // })
   }
 }
 </script>

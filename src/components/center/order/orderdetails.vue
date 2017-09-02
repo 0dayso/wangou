@@ -58,7 +58,6 @@
     </div>
   </div>
 </template>
-<script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 <script>
 import '../../../../static/css/aui.css'
 import { Toast } from 'mint-ui'
@@ -121,22 +120,22 @@ export default {
         }
       }
     })
-    this.$http.post(this.$store.state.postUrl + '/Api/App/getWechatSign', {'ticket': this.$store.state.ticket, 'url': window.location.href.split('#')[0]}, {emulateJSON: true})
-    .then(function (res) {
-      if (res.body.code === 10000) {
-        this.$store.state.wxConfig = res.body.data
-        this.wxconfig = res.body.data
-        // 配置微信信息
-        wx.config({
-          debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-          appId: res.body.data.appId, // 必填，公众号的唯一标识
-          timestamp: res.body.data.timestamp, // 必填，生成签名的时间戳
-          nonceStr: res.body.data.nonceStr, // 必填，生成签名的随机串
-          signature: res.body.data.signature, // 必填，签名，见附录1
-          jsApiList: ['getLocation'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-        })
-      }
-    })
+    // this.$http.post(this.$store.state.postUrl + '/Api/App/getWechatSign', {'ticket': this.$store.state.ticket, 'url': window.location.href.split('#')[0]}, {emulateJSON: true})
+    // .then(function (res) {
+    //   if (res.body.code === 10000) {
+    //     this.$store.state.wxConfig = res.body.data
+    //     this.wxconfig = res.body.data
+    //     // 配置微信信息
+    //     wx.config({
+    //       debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+    //       appId: res.body.data.appId, // 必填，公众号的唯一标识
+    //       timestamp: res.body.data.timestamp, // 必填，生成签名的时间戳
+    //       nonceStr: res.body.data.nonceStr, // 必填，生成签名的随机串
+    //       signature: res.body.data.signature, // 必填，签名，见附录1
+    //       jsApiList: ['getLocation'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    //     })
+    //   }
+    // })
   },
   methods: {
     // 查看奖品详情
@@ -238,7 +237,7 @@ export default {
         this.$http.post(this.$store.state.postUrl + '/Api/Mall/exchangeGoods', {'ssAuth': this.ssAuth, 'goodsId': this.goodsInt.goodsId, 'discount': this.intQuan, 'addressId': this.addressId, 'payType': 'alipay'}, {emulateJSON: true})
         .then(function (res) {
           if (res.body.code === 10000) {
-            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.order_sn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid}, {emulateJSON: true})
+            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.order_sn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'app_code': this.gzhCode, 'pay_for': 1}, {emulateJSON: true})
             .then(function (res) {
               console.log(res)
               wx.ready(function () {
@@ -247,11 +246,10 @@ export default {
                   appId: res.body.data.order_info.appId,
                   timestamp: res.body.data.order_info.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
                   nonceStr: res.body.data.order_info.nonceStr, // 支付签名随机串，不长于 32 位
-                  package: res.body.data.order_info.prepayId,
+                  package: res.body.data.order_info.package,
                   signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-                  paySign: res.body.data.order_info.paySign, // 支付签名
+                  paySign: res.body.data.order_info.sign, // 支付签名
                   success: function (res) {
-                    alert(res)
                   }
                 })
               })

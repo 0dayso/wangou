@@ -46,6 +46,7 @@
 </template>
 <script>
 import { Toast } from 'mint-ui'
+import wx from 'weixin-js-sdk'
 export default {
   data () {
     return {
@@ -55,6 +56,7 @@ export default {
       pr: '00.00', // 金额
       gongzhongquan: 0, // 公众券
       ssAuth: this.$store.state.ssAuth, // 令牌
+      gzhCode: this.$store.state.gzhCode, // 公众号编码
       apply: '',
       huodong: [1],
       xian: 0,
@@ -139,7 +141,24 @@ export default {
       } else {
         this.$http.post(this.$store.state.postUrl + '/Api/Store/placeStoreOrder', {'ssAuth': this.ssAuth, 'payType': 'wxPay', 'storeId': this.$route.query.storeId, 'totalMoney': this.total, 'pointMoney': this.num}, {emulateJSON: true})
         .then(function (res) {
-          console.log(res)
+          if (res.body.code === 10000) {
+            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.order_sn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'app_code': this.gzhCode, 'pay_for': 2}, {emulateJSON: true})
+            .then(function (res) {
+              wx.ready(function () {
+              // 支付配置
+                wx.chooseWXPay({
+                  appId: res.body.data.order_info.appId,
+                  timestamp: res.body.data.order_info.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                  nonceStr: res.body.data.order_info.nonceStr, // 支付签名随机串，不长于 32 位
+                  package: res.body.data.order_info.package,
+                  signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                  paySign: res.body.data.order_info.sign, // 支付签名
+                  success: function (res) {
+                  }
+                })
+              })
+            })
+          }
         })
       }
     }
