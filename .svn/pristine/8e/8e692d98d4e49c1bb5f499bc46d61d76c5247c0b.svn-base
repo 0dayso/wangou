@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>测试</title>
+</head>
+<body>
+	<script>
+		function callAndroid () {
+		  document.location = 'js://close';
+		}
+	</script>
+	<button type="button" id="btn1" onclick="callAndroid()">
+		点击调用安卓
+	</button>
+</body>
+</html>

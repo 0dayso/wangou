@@ -87,7 +87,7 @@ export default {
         this.$http.post(this.$store.state.postUrl + '/Api/Pay/payOrderNew', dataArr, {emulateJSON: true})
         .then(function (res) {
           if (res.body.code === 10000) {
-            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.orderSn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'appCode1': this.appids}, {emulateJSON: true})
+            this.$http.post(this.$store.state.postUrl + '/Api/Pay/pay', {'ssAuth': this.ssAuth, 'order_sn': res.body.data.orderSn, 'pay_type': 'wxPay', 'device': 'wx', 'openid': this.$store.state.openid, 'appCode1': this.appids, 'goodsNum': 0}, {emulateJSON: true})
             .then(function (res) {
               wx.ready(function () {
               // 支付配置

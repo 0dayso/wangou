@@ -1,4 +1,5 @@
 import Vue from 'vue'
+
 import Router from 'vue-router'
 
 import Index from '@/components/index' // 首页
@@ -90,6 +91,8 @@ import wgGocomment from '@/components/comment/gocomment' // 待评论 --> 评价
 import wgGame from '@/components/game' // 启动游戏
 
 import wgViews from '@/components/imgcon/views' // 查看大图
+
+import wgGoodsback from '@/components/callback/goodsback' // 支付完成
 
 Vue.use(Router)
 export default new Router({
@@ -324,6 +327,11 @@ export default new Router({
     {
       path: '/imgcon/views',
       component: wgViews
+    },
+    // 支付完
+    {
+      path: '/goods/goodsback',
+      component: wgGoodsback
     }
   ]
 })

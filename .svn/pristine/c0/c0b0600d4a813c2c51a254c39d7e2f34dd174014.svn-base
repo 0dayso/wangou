@@ -1,0 +1,62 @@
+<!DOCTYPE html><html><head><meta http-equiv=Content-Type content=text/html charset=utf-8><meta name=viewport content="width=device-width,minimum-scale=1,maximum-scale=1,user-scalable=no"><style>html{
+        overflow-x: hidden; overflow-y: auto;
+      }</style><script src=./static/js/api.js></script><script>//常规情况下js根据屏幕宽度动态计算
+	!(function(doc, win) {
+   		 var docEle = doc.documentElement,
+        evt = "onorientationchange" in window ? "orientationchange" : "resize",
+        fn = function() {
+            var width = docEle.clientWidth;
+            width && (docEle.style.fontSize = 20 * (width / 320) + "px");
+        };
+    	// win.addEventListener(evt, fn, false);
+    	doc.addEventListener("DOMContentLoaded", fn, false);
+		}(document, window))</script><title>玩购</title><link href=./static/css/app.bbbd569939cec88ceb8c0ecb7855fc00.css rel=stylesheet></head><body><div id=app></div><script type=text/javascript src=./static/js/manifest.c257451ca499373b9a31.js></script><script type=text/javascript src=./static/js/vendor.40bdbcc618ee11a6cfce.js></script><script type=text/javascript src=./static/js/app.ce6a0ea0370307a2e973.js></script></body><script src=./static/js/aui-dialog.js></script><script type=text/javascript>apiready = function () {
+        api.parseTapmode();
+    }
+    var dialog = new auiDialog();
+    function openDialog(type){
+        switch (type) {
+            case "text":
+                dialog.alert({
+                    title:"呼叫电话",
+                    msg:'400-823-7618',
+                    buttons:['取消','<a href="tel:400-823-7618" style="display:block;width:100%;height:100%;z-index:500">呼叫</a>']
+                },function(ret){
+                })
+                break;
+            default:
+                break;
+            case "username":
+                dialog.prompt({
+                    title:"修改昵称",
+                    text:'请输入昵称',
+                    buttons:['取消','确定']
+                },function(ret){
+                    console.log(ret)
+                    if(ret.buttonIndex == 2){
+                        dialog.alert({
+                            title:"提示",
+                            msg: "您输入的内容是："+ret.text,
+                            buttons:['确定']
+                        });
+                    }
+                })
+                break;
+        }
+    }
+//渠道微信用户授权信息
+var myurl= GetQueryString("username");
+   localStorage.wgName = GetQueryString("username");
+   localStorage.wgUserid = GetQueryString("user_id");
+   localStorage.wgPic = GetQueryString("pic");
+   if (GetQueryString("ssauth")) {
+    localStorage.wgSsauth = GetQueryString("ssauth");
+   } else {
+    localStorage.wgSsauth = 0
+   }
+function GetQueryString(name)
+{
+  var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+  var r = window.location.search.substr(1).match(reg);
+  if(r!=null)return  unescape(r[2]); return null;
+}</script></html>
